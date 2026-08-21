@@ -1,63 +1,61 @@
 package com.eventos.service;
 
 import com.eventos.model.Evento;
-import java.util.ArrayList;
+import com.eventos.repository.EventoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
+@Service
 public class EventoService {
     
-    // Lista para almacenar eventos en memoria
-    private List<Evento> eventos = new ArrayList<>();
-    private int contadorId = 1;
+    @Autowired
+    private EventoRepository eventoRepository;
     
     // Crear un nuevo evento
     public Evento crearEvento(String nombre, String descripcion, String fecha, String ubicacion, int capacidad) {
-        Evento evento = new Evento(contadorId++, nombre, descripcion, fecha, ubicacion, capacidad);
-        eventos.add(evento);
-        return evento;
+        Evento evento = new Evento(nombre, descripcion, fecha, ubicacion, capacidad);
+        return eventoRepository.save(evento);
     }
     
     // Obtener todos los eventos
     public List<Evento> obtenerTodos() {
-        return eventos;
+        return eventoRepository.findAll();
     }
     
     // Obtener un evento por ID
     public Evento obtenerPorId(int id) {
-        for (Evento evento : eventos) {
-            if (evento.getId() == id) {
-                return evento;
-            }
-        }
-        return null;
+        Optional<Evento> evento = eventoRepository.findById(id);
+        return evento.orElse(null);
     }
     
     // Actualizar un evento
     public Evento actualizar(int id, String nombre, String descripcion, String fecha, String ubicacion, int capacidad) {
-        Evento evento = obtenerPorId(id);
-        if (evento != null) {
+        Optional<Evento> eventoOpt = eventoRepository.findById(id);
+        if (eventoOpt.isPresent()) {
+            Evento evento = eventoOpt.get();
             evento.setNombre(nombre);
             evento.setDescripcion(descripcion);
             evento.setFecha(fecha);
             evento.setUbicacion(ubicacion);
             evento.setCapacidad(capacidad);
+            return eventoRepository.save(evento);
         }
-        return evento;
+        return null;
     }
     
     // Eliminar un evento
     public boolean eliminar(int id) {
-        for (int i = 0; i < eventos.size(); i++) {
-            if (eventos.get(i).getId() == id) {
-                eventos.remove(i);
-                return true;
-            }
+        if (eventoRepository.existsById(id)) {
+            eventoRepository.deleteById(id);
+            return true;
         }
         return false;
     }
     
     // Contar eventos totales
     public int contarEventos() {
-        return eventos.size();
+        return (int) eventoRepository.count();
     }
 }

@@ -3,14 +3,17 @@ package com.eventos.controller;
 import com.eventos.model.Evento;
 import com.eventos.service.EventoService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/eventos")
 public class EventoController {
     
-    private EventoService eventoService = new EventoService();
-    
+    @Autowired
+    private EventoService eventoService;
+
     // GET: obtener todos los eventos
     @GetMapping
     public List<Evento> obtenerTodos() {

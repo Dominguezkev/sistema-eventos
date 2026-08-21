@@ -1,22 +1,32 @@
 package com.eventos.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "eventos")
 public class Evento {
     
-    // Atributos (propiedades)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    
+    @Column(nullable = false)
     private String nombre;
+    
     private String descripcion;
+    
     private String fecha;
+    
     private String ubicacion;
+    
     private int capacidad;
     
-    // Constructor sin parámetros
+    // Constructor sin parámetros (JPA lo necesita obligatoriamente)
     public Evento() {
     }
     
-    // Constructor con parámetros
-    public Evento(int id, String nombre, String descripcion, String fecha, String ubicacion, int capacidad) {
-        this.id = id;
+    // Constructor con parámetros (sin el id, porque lo genera la BD)
+    public Evento(String nombre, String descripcion, String fecha, String ubicacion, int capacidad) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.fecha = fecha;
@@ -74,7 +84,6 @@ public class Evento {
         this.capacidad = capacidad;
     }
     
-    // toString() para ver el objeto como String
     @Override
     public String toString() {
         return "Evento{" +
