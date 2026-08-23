@@ -1,5 +1,6 @@
 package com.eventos.service;
 
+import com.eventos.exception.EventoNoEncontradoException;
 import com.eventos.model.Evento;
 import com.eventos.repository.EventoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,24 +27,22 @@ public class EventoService {
     
     // Obtener un evento por ID
     public Evento obtenerPorId(int id) {
-        Optional<Evento> evento = eventoRepository.findById(id);
-        return evento.orElse(null);
+        return eventoRepository.findById(id)
+                .orElseThrow(() -> new EventoNoEncontradoException(id));
     }
     
     // Actualizar un evento
     public Evento actualizar(int id, String nombre, String descripcion, String fecha, String ubicacion, int capacidad) {
-        Optional<Evento> eventoOpt = eventoRepository.findById(id);
-        if (eventoOpt.isPresent()) {
-            Evento evento = eventoOpt.get();
-            evento.setNombre(nombre);
-            evento.setDescripcion(descripcion);
-            evento.setFecha(fecha);
-            evento.setUbicacion(ubicacion);
-            evento.setCapacidad(capacidad);
-            return eventoRepository.save(evento);
-        }
-        return null;
-    }
+        Evento evento = eventoRepository.findById(id)
+            .orElseThrow(() -> new EventoNoEncontradoException(id));
+    
+        evento.setNombre(nombre);
+        evento.setDescripcion(descripcion);
+        evento.setFecha(fecha);
+        evento.setUbicacion(ubicacion);
+        evento.setCapacidad(capacidad);
+        return eventoRepository.save(evento);
+}
     
     // Eliminar un evento
     public boolean eliminar(int id) {

@@ -4,6 +4,7 @@ import com.eventos.model.Evento;
 import com.eventos.service.EventoService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 import java.util.List;
 
 
@@ -28,7 +29,7 @@ public class EventoController {
     
     // POST: crear un nuevo evento
     @PostMapping
-    public Evento crear(@RequestBody Evento evento) {
+    public Evento crear(@Valid @RequestBody Evento evento) {
         return eventoService.crearEvento(
             evento.getNombre(),
             evento.getDescripcion(),
@@ -40,7 +41,7 @@ public class EventoController {
     
     // PUT: actualizar evento
     @PutMapping("/{id}")
-    public Evento actualizar(@PathVariable int id, @RequestBody Evento evento) {
+    public Evento actualizar(@PathVariable int id, @Valid @RequestBody Evento evento) {
         return eventoService.actualizar(
             id,
             evento.getNombre(),
