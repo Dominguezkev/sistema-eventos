@@ -83,5 +83,58 @@ class EventoServiceTest {
         assertTrue(resultado);
         verify(eventoRepository, times(1)).deleteById(1);
     }
+    @Test
+    void deberiaActualizarUnEvento() {
+        // Arrange
+        Evento eventoActualizado = new Evento("Tech Conf 2027", "Nueva descripcion", "2027-01-15", "Cordoba", 200);
+        eventoActualizado.setId(1);
 
+        when(eventoRepository.findById(1)).thenReturn(Optional.of(evento));
+        when(eventoRepository.save(any(Evento.class))).thenReturn(eventoActualizado);
+
+        // Act
+        Evento resultado = eventoService.actualizar(1, "Tech Conf 2027", "Nueva descripcion", "2027-01-15", "Cordoba", 200);
+
+        // Assert
+        assertNotNull(resultado);
+        assertEquals("Tech Conf 2027", resultado.getNombre());
+        assertEquals(200, resultado.getCapacidad());
+        verify(eventoRepository, times(1)).save(any(Evento.class));
+    }
+
+    @Test
+    void deberiaLanzarExcepcionAlActualizarEventoInexistente() {
+        // Arrange
+        when(eventoRepository.findById(999)).thenReturn(Optional.empty());
+
+        // Act + Assert
+        assertThrows(EventoNoEncontradoException.class, () -> {
+            eventoService.actualizar(999, "Nombre", "Desc", "2027-01-01", "Lugar", 50);
+        });
+    }
+
+    @Test
+    void deberiaContarEventosCorrectamente() {
+        // Arrange
+        when(eventoRepository.count()).thenReturn(5L);
+
+        // Act
+        int resultado = eventoService.contarEventos();
+
+        // Assert
+        assertEquals(5, resultado);
+    }
+
+    @Test
+    void deberiaDevolverFalseAlEliminarEventoInexistente() {
+        // Arrange
+        when(eventoRepository.existsById(999)).thenReturn(false);
+
+        // Act
+        boolean resultado = eventoService.eliminar(999);
+
+        // Assert
+        assertFalse(resultado);
+        verify(eventoRepository, never()).deleteById(anyInt());
+    }
 }
